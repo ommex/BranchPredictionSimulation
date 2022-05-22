@@ -1,6 +1,91 @@
 from os import listdir
 import pprint
 import json
+import matplotlib.pyplot as plt
+
+
+class n_bit_branch_prediction:
+    def __init__(self, len):
+        self.prediction_data = {}
+        self.right_cont = 0
+        self.wrong_count = 0
+        self.whole_len = 0
+        self.new = 0
+
+        self.int_len = 0
+        self.int_len = 2**len - 1
+
+    def increment(self, integer):
+        if (integer < self.int_len):
+            return integer + 1
+        else:
+            return integer
+
+    def decrement(self, integer):
+        if (integer > 0):
+            return integer - 1
+        else:
+            return integer
+
+    def predict(self, address):
+        if address in self.prediction_data.keys():
+            index = self.prediction_data[address]
+
+            if index > int(self.int_len/2):
+                return True
+
+            else:
+                return False
+
+        else:
+            self.prediction_data[address] = None
+            return None
+
+    def save(self, address, branch):
+        if self.prediction_data[address] == None:
+            self.new = self.new + 1
+            if branch:
+                self.prediction_data[address] = round(self.int_len/2)
+            else:
+                self.prediction_data[address] = 0
+
+        else:
+            if branch:
+
+                index = self.prediction_data[address]
+                index = self.increment(index)
+                self.prediction_data[address] = index
+
+            else:
+
+                index = self.prediction_data[address]
+                index = self.decrement(index)
+                self.prediction_data[address] = index
+
+    def check(self, branch, prediction):
+        if branch == prediction:
+            self.right_cont = self.right_cont + 1
+        else:
+            self.wrong_count = self.wrong_count + 1
+
+    def iterator(self, traces):
+
+        self.whole_len = len(traces)
+
+        for data in traces:
+            branch_addr = data["branch_address"]
+            branch = data["branch"]
+
+            prediction = self.predict(branch_addr)
+            self.save(branch_addr, branch)
+            self.check(branch, prediction)
+
+        wrong_percentage = round((self.wrong_count / self.whole_len)*100,3)
+        right_percentage = round((self.right_cont / self.whole_len)*100,3)
+
+        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len, "unique": self.new,
+                "wrong_percentage": wrong_percentage, "right_percentage": right_percentage}
+
 
 class two_bit_branch_prediction:
     def __init__(self):
@@ -80,7 +165,10 @@ class two_bit_branch_prediction:
             self.two_bit_save(branch_addr, branch)
             self.two_bit_check(branch, prediction)
 
-        return {"right":self.right_cont, "wrong":self.wrong_count, "whole":self.whole_len, "unique":self.new}
+        wrong_percentage = self.wrong_count / self.whole_len
+        right_percentage = self.right_cont / self.whole_len
+
+        return {"right":self.right_cont, "wrong":self.wrong_count, "whole":self.whole_len, "unique":self.new, "wrong_percentage":wrong_percentage, "right_percentage":right_percentage}
 
 
 class TraceReader:
@@ -138,8 +226,31 @@ class TraceReader:
             self.traces = json.load(f)
 
 
+def n_bit_plot_predictor(end_bit, folder_name, checkpoint=""):
 
-reader = TraceReader("trace", "checkpoint.json")
-traces = reader.traces["trace"]
-two_bit_iterator = two_bit_branch_prediction()
-pprint.pprint(two_bit_iterator.iterator(traces))
+    reader = TraceReader(folder_name, checkpoint)
+    for file in reader.traces.keys():
+        print("looking at "+file)
+        plot_data = [[],[]]
+
+        for i in range(1, end_bit+1):
+            plot_data[0].append(i)
+            traces = reader.traces[file]
+            n_bit_iterator = n_bit_branch_prediction(i)
+
+            simulation_results = n_bit_iterator.iterator(traces)
+            plot_data[1].append(simulation_results["wrong_percentage"])
+
+            print(simulation_results)
+
+        plt.plot(plot_data[0], plot_data[1], label=file)
+
+
+    plt.ylabel("wrong_percentage")
+    plt.xlabel("bit_storage")
+    plt.legend()
+    plt.savefig("various_register_sizes.png")
+    plt.show()
+
+
+n_bit_plot_predictor(10, "trace", "checkpoint.json")
