@@ -227,8 +227,12 @@ class TraceReader:
 
 
 def n_bit_plot_predictor(end_bit, folder_name, checkpoint=""):
+    fig = plt.figure()
+    ax = fig.add_subplot()
 
     reader = TraceReader(folder_name, checkpoint)
+    sizes = {}
+
     for file in reader.traces.keys():
         print("looking at "+file)
         plot_data = [[],[]]
@@ -243,14 +247,25 @@ def n_bit_plot_predictor(end_bit, folder_name, checkpoint=""):
 
             print(simulation_results)
 
-        plt.plot(plot_data[0], plot_data[1], label=file)
+        ax.plot(plot_data[0], plot_data[1], label=file)
+        sizes[file] = simulation_results["whole"]
 
+    size_str = ""
 
-    plt.ylabel("wrong_percentage")
-    plt.xlabel("bit_storage")
+    for file in sizes.keys():
+        size = sizes[file]
+        size_str = size_str + file + " has length of " + str(size) + "\n"
+
+    print(size_str)
+
+    ax.set_ylabel("wrong_percentage")
+    ax.set_xlabel("bit_storage")
+
+    ax.text(2, 26, size_str)
+
     plt.legend()
-    plt.savefig("various_register_sizes.png")
+    plt.savefig("./plots/till_"+str(end_bit)+".png")
     plt.show()
 
 
-n_bit_plot_predictor(10, "trace", "checkpoint.json")
+n_bit_plot_predictor(5, "trace", "checkpoint.json")
