@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 class n_bit_branch_prediction:
-    def __init__(self, len):
+    def __init__(self, len, bit_crop=0, architecture=32):
         self.prediction_data = {}
         self.right_cont = 0
         self.wrong_count = 0
@@ -14,6 +14,9 @@ class n_bit_branch_prediction:
 
         self.int_len = 0
         self.int_len = 2**len - 1
+
+        self.bit_crop = bit_crop
+        self.architecture = architecture
 
     def increment(self, integer):
         if (integer < self.int_len):
@@ -27,7 +30,29 @@ class n_bit_branch_prediction:
         else:
             return integer
 
-    def predict(self, address):
+    def crop_hex(self, hex_input, amount):
+        if amount > 0:
+            int_value = int(hex_input, base=16)
+            bin_value = bin(int_value)
+            bin_cropped = ""
+
+            input_len = len(bin_value)
+
+            for bit in range(amount - 1):
+                bin_cropped = bin_value[input_len - bit - 1] + bin_cropped
+
+            hex_cropped = hex(int(bin_cropped, 2))
+
+            return hex_cropped
+
+        else:
+            return hex_input
+
+
+    def predict(self, input_address):
+
+        address = self.crop_hex(input_address, self.bit_crop)
+
         if address in self.prediction_data.keys():
             index = self.prediction_data[address]
 
@@ -41,7 +66,10 @@ class n_bit_branch_prediction:
             self.prediction_data[address] = None
             return None
 
-    def save(self, address, branch):
+
+    def save(self, input_address, branch):
+        address = self.crop_hex(input_address, self.bit_crop)
+
         if self.prediction_data[address] == None:
             self.new = self.new + 1
             if branch:
@@ -142,7 +170,7 @@ class TraceReader:
             self.traces = json.load(f)
 
 
-def n_bit_plot_predictor(end_bit, folder_name, checkpoint=""):
+def n_bit_plot_predictor(end_bit, folder_name, checkpoint="", bit_crop=0, show=True):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -156,7 +184,7 @@ def n_bit_plot_predictor(end_bit, folder_name, checkpoint=""):
         for i in range(1, end_bit+1):
             plot_data[0].append(i)
             traces = reader.traces[file]
-            n_bit_iterator = n_bit_branch_prediction(i)
+            n_bit_iterator = n_bit_branch_prediction(i, bit_crop=bit_crop)
 
             simulation_results = n_bit_iterator.iterator(traces)
             plot_data[1].append(simulation_results["wrong_percentage"])
@@ -179,9 +207,15 @@ def n_bit_plot_predictor(end_bit, folder_name, checkpoint=""):
 
     ax.text(2, 26, size_str)
 
+    save_file_name = "./plots/end_bit"+str(end_bit)+"_bit_crop_"+str(bit_crop)+".png"
+
     plt.legend()
-    plt.savefig("./plots/till_"+str(end_bit)+".png")
-    plt.show()
+    plt.savefig(save_file_name)
+    if show:
+        plt.show()
+
+    print("SAVED to "+save_file_name)
 
 
-n_bit_plot_predictor(5, "trace")
+for i in range(2, 21):
+    n_bit_plot_predictor(20, "trace", checkpoint="checkpoint.json", bit_crop=i, show=False)
