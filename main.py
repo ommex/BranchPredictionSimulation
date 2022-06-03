@@ -1,8 +1,8 @@
 import iterators
 
 
-iterators.pht_size_iterator(20, "trace", checkpoint="checkpoint.json", bit_crop=22, high_res=True)
-#iterators.bit_crop_size_iterator(30, "trace", checkpoint="checkpoint.json",high_res=True)
+iterators.pht_size_iterator(4, "trace", checkpoint="checkpoint.json", bit_crop=0, high_res=False)
+#iterators.bit_crop_size_iterator(8, "trace", checkpoint="checkpoint.json",high_res=True)
 
 
 ##FAQ
