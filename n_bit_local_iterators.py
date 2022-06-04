@@ -18,7 +18,7 @@ def pht_size_iterator(pht_size, folder_name, checkpoint="", bit_crop=0, show=Tru
         for i in range(1, pht_size+1):
             plot_data[0].append(i)
             traces = reader.traces[file]
-            n_bit_iterator = predictors.n_bit_branch_prediction(i, bit_crop=bit_crop)
+            n_bit_iterator = predictors.n_bit_local_predictor(i, bit_crop=bit_crop)
 
             simulation_results = n_bit_iterator.check_traces(traces)
             plot_data[1].append(simulation_results["wrong_percentage"])
@@ -68,7 +68,7 @@ def bit_crop_size_iterator(end_bit_crop, folder_name, checkpoint="", pht_size=20
         for i in range(0, end_bit_crop+1):
             plot_data[0].append(i)
             traces = reader.traces[file]
-            n_bit_iterator = predictors.n_bit_branch_prediction(pht_size, bit_crop=i)
+            n_bit_iterator = predictors.n_bit_local_predictor(pht_size, bit_crop=i)
 
             simulation_results = n_bit_iterator.check_traces(traces)
             plot_data[1].append(simulation_results["wrong_percentage"])

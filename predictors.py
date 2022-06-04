@@ -1,4 +1,6 @@
-class n_bit_branch_prediction:
+import collections
+
+class n_bit_local_predictor:
     def __init__(self, pht_len, bit_crop=0, architecture=32):
         self.prediction_data = {}
         self.right_cont = 0
@@ -121,3 +123,105 @@ class n_bit_branch_prediction:
                 "wrong_percentage": wrong_percentage, "right_percentage": right_percentage, "bit_crop": self.bit_crop,
                 "sample_adress": branch_addr, "pht_size": self.int_len}
 
+class n_bit_global_two_level_predictor:
+    def __init__(self, history_len, pht_len=2):
+
+        self.right_cont = 0
+        self.wrong_count = 0
+        self.whole_len = 0
+        self.new = 0
+        self.pht_len = pht_len
+
+        self.history_len = history_len
+
+        self.history = []
+        self.pht_register = {}
+
+        self.get_binary = lambda x, n: format(x, 'b').zfill(n)
+
+        self.init_pht_register()
+        self.init_history()
+
+
+    def init_pht_register(self):
+        for i in range(2 ** self.history_len):
+            self.pht_register[self.get_binary(i, self.history_len)] = 0
+
+    def init_history(self):
+        for i in range(self.history_len):
+            self.history.append(0)
+
+    def increment(self, integer):
+        if (integer < 2):
+            return integer + 1
+        else:
+            return integer
+
+    def decrement(self, integer):
+        if (integer > 0):
+            return integer - 1
+        else:
+            return integer
+
+
+    def predict(self):
+        history_string = ''.join(str(e) for e in self.history)
+        pht_value = self.pht_register[history_string]
+
+        if pht_value > int(self.pht_len / 2):
+            return True
+
+        else:
+            return False
+
+    def append_history(self, branch):
+        value = 1 if branch else 0
+
+        tmp_list = collections.deque(self.history)
+        tmp_list.rotate(1)
+        self.history = list(tmp_list)
+        self.history[0] = value
+
+
+    def save(self, branch):
+
+        if branch:
+            history_string = ''.join(str(e) for e in self.history)
+            pht_value = self.pht_register[history_string]
+            new_pht_value = self.increment(pht_value)
+            self.pht_register[history_string] = new_pht_value
+
+
+        else:
+            history_string = ''.join(str(e) for e in self.history)
+            pht_value = self.pht_register[history_string]
+            new_pht_value = self.decrement(pht_value)
+            self.pht_register[history_string] = new_pht_value
+
+        self.append_history(branch)
+
+
+
+    def check(self, branch, prediction):
+        if branch == prediction:
+            self.right_cont = self.right_cont + 1
+        else:
+            self.wrong_count = self.wrong_count + 1
+
+    def check_traces(self, traces):
+        self.whole_len = len(traces)
+
+        for data in traces:
+            branch_addr = data["branch_address"]
+            branch = data["branch"]
+
+            prediction = self.predict()
+            self.save(branch)
+            self.check(branch, prediction)
+
+        wrong_percentage = round((self.wrong_count / self.whole_len) * 100, 3)
+        right_percentage = round((self.right_cont / self.whole_len) * 100, 3)
+
+        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len, "unique": self.new,
+                "wrong_percentage": wrong_percentage, "right_percentage": right_percentage,
+                "sample_adress": branch_addr, "pht_size": self.pht_len, "history_len":self.history_len}
