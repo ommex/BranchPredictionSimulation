@@ -1,11 +1,12 @@
-import n_bit_local_iterators
-import n_bit_global_two_way_iterators
+import local_iterators
+import global_iterators
+import hybrid_iterators
 
 
-n_bit_global_two_way_iterators.history_size_iterator(20, "trace", checkpoint="checkpoint.json", high_res=False)
-
-#n_bit_local_iterators.pht_size_iterator(4, "trace", checkpoint="checkpoint.json", bit_crop=0, high_res=False)
-#n_bit_local_iterators.bit_crop_size_iterator(8, "trace", checkpoint="checkpoint.json",high_res=True)
+hybrid_iterators.gshare_size_iterator(20, "trace", checkpoint="checkpoint.json", show=True)
+#global_iterators.history_size_iterator(20, "trace", checkpoint="checkpoint.json", high_res=False)
+#local_iterators.pht_size_iterator(4, "trace", checkpoint="checkpoint.json", bit_crop=0, high_res=False)
+#local_iterators.bit_crop_size_iterator(8, "trace", checkpoint="checkpoint.json",high_res=True)
 
 
 ##FAQ

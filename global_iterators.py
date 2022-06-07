@@ -4,7 +4,7 @@ from numpy import array
 import trace_reader
 import predictors
 
-def history_size_iterator(history_end_size, folder_name, checkpoint="", show=True, high_res=False):
+def history_size_iterator(history_end_size, folder_name, pht_size=2, checkpoint="", show=True, high_res=False):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -18,7 +18,7 @@ def history_size_iterator(history_end_size, folder_name, checkpoint="", show=Tru
         for i in range(1, history_end_size+1):
             plot_data[0].append(i)
             traces = reader.traces[file]
-            n_bit_iterator = predictors.n_bit_global_two_level_predictor(i)
+            n_bit_iterator = predictors.n_bit_global_two_level_predictor(i, pht_len=pht_size)
 
             simulation_results = n_bit_iterator.check_traces(traces)
             plot_data[1].append(simulation_results["wrong_percentage"])
@@ -28,20 +28,11 @@ def history_size_iterator(history_end_size, folder_name, checkpoint="", show=Tru
         ax.plot(plot_data[0], plot_data[1], label=file)
         sizes[file] = simulation_results["whole"]
 
-    size_str = ""
-
-    for file in sizes.keys():
-        size = sizes[file]
-        size_str = size_str + file + " has length of " + str(size) + "\n"
-
-    print(size_str)
-
     ax.set_ylabel("wrong_percentage")
     ax.set_xlabel("history_size")
 
-    ax.text(2, 26, size_str)
 
-    save_file_name = "./plots/variable_pht_size/pht_size_"+str(history_end_size)+"_bit_crop_"+str(bit_crop)
+    save_file_name = "./plots/variable_history_size/pht_size_"+str(pht_size)+"_history_end_size_"+str(history_end_size)
 
     plt.legend()
     plt.savefig(save_file_name+".png")
