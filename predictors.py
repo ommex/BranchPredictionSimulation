@@ -305,7 +305,8 @@ class n_bit_tournament:
 
         if address in self.local_history.keys():
             local_history = self.local_history[address]
-            pht_value = self.local_pht_register[local_history]
+            pht_address = ''.join(str(x) for x in local_history)
+            pht_value = self.local_pht_register[pht_address]
 
             if pht_value > int(self.pht_len / 2):
                 return True
@@ -318,6 +319,7 @@ class n_bit_tournament:
 
 
     def predict_global(self):
+
         history_string = ''.join(str(e) for e in self.global_history)
         pht_value = self.global_pht_register[history_string]
 
@@ -331,6 +333,7 @@ class n_bit_tournament:
         if address in self.decision_dict:
             return self.decision_dict[address]
         else:
+            self.decision_dict[address] = False
             return None
 
     def save_decider(self, address, decision):
@@ -359,21 +362,22 @@ class n_bit_tournament:
         else:
             start_history = self.local_history[address]
 
+        appended_history = self.append_history(start_history, branch)
+        self.local_history[address] = appended_history
+
+        pht_address = ''.join(str(x) for x in start_history)
+
         if branch:
 
-            index = self.local_history[start_history]
+            index = self.local_pht_register[pht_address]
             index = self.increment(index)
-            self.local_history[start_history] = index
+            self.local_pht_register[pht_address] = index
 
         else:
 
-            index = self.local_history[start_history]
+            index = self.local_pht_register[pht_address]
             index = self.decrement(index)
-            self.local_history[start_history] = index
-
-
-        appended_history = self.append_history(start_history, branch)
-        self.local_history[address] = appended_history
+            self.local_pht_register[pht_address] = index
 
 
     def save_global(self, branch):
@@ -401,8 +405,10 @@ class n_bit_tournament:
     def check(self, branch, prediction):
         if branch == prediction:
             self.right_cont = self.right_cont + 1
+            return True
         else:
             self.wrong_count = self.wrong_count + 1
+            return False
 
     def check_traces(self, traces):
 
@@ -412,17 +418,22 @@ class n_bit_tournament:
             raw_branch_addr = data["branch_address"]
             branch = data["branch"]
             predictor_type = self.decider(raw_branch_addr)
+            cropped_branch_addr = self.crop_hex(raw_branch_addr, self.bit_crop)
+
 
             if predictor_type:
-                cropped_branch_addr = self.crop_hex(raw_branch_addr, self.bit_crop)
                 prediction = self.predict_local(cropped_branch_addr)
-                self.save_local(cropped_branch_addr, branch)
 
             else:
                 prediction = self.predict_global()
-                self.save_global(branch)
 
-            self.check(branch, prediction)
+            self.save_local(cropped_branch_addr, branch)
+            self.save_global(branch)
+            decision = self.check(branch, prediction)
+
+            self.save_decider(raw_branch_addr, decision)
+
+
 
         wrong_percentage = round((self.wrong_count / self.whole_len) * 100, 3)
         right_percentage = round((self.right_cont / self.whole_len) * 100, 3)
