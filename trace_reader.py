@@ -1,5 +1,5 @@
 import json
-from os import listdir
+from os import listdir, path
 
 class TraceReader:
     def __init__(self, folder, checkpoint=""):
@@ -7,6 +7,7 @@ class TraceReader:
         self.traces = {}
 
         if checkpoint != "":
+            self.try_checkpoint(checkpoint)
             print("read checkpoint")
             self.read_checkpoint(checkpoint)
             print("reading complete")
@@ -54,3 +55,9 @@ class TraceReader:
     def read_checkpoint(self, filename):
         with open(filename, 'r') as f:
             self.traces = json.load(f)
+
+
+    def try_checkpoint(self, filename):
+        if not path.exists(filename):
+            self.read_files()
+            self.save_checkpoint(filename)
