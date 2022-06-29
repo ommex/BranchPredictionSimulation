@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
-from numpy import savetxt
-from numpy import array
 import trace_reader
 import predictors
 
-def pht_size_iterator(pht_size, folder_name, checkpoint="", bit_crop=0, show=True, high_res=False):
+def pht_size_iterator(pht_size, folder_name, save_file_name, checkpoint="", bit_crop=0):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -41,20 +39,14 @@ def pht_size_iterator(pht_size, folder_name, checkpoint="", bit_crop=0, show=Tru
 
     ax.text(2, 26, size_str)
 
-    save_file_name = "./plots/variable_pht_size/pht_size_"+str(pht_size)+"_bit_crop_"+str(bit_crop)
-
     plt.legend()
     plt.savefig(save_file_name+".png")
 
-    if high_res:
-        savetxt(save_file_name+'.csv', array(plot_data), delimiter=',')
-
-    if show:
-        plt.show()
+    plt.show()
 
     print("SAVED to "+save_file_name)
 
-def bit_crop_size_iterator(end_bit_crop, folder_name, checkpoint="", pht_size=20, show=True, high_res=False):
+def bit_crop_size_iterator(end_bit_crop, folder_name, save_file_name,checkpoint="", pht_size=20):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -91,15 +83,9 @@ def bit_crop_size_iterator(end_bit_crop, folder_name, checkpoint="", pht_size=20
 
     ax.text(5, 26, size_str)
 
-    save_file_name = "./plots/variable_bit_crop/pht_size_"+str(pht_size)+"_bit_crop_"+str(end_bit_crop)
-
     plt.legend()
     plt.savefig(save_file_name+".png")
 
-    if high_res:
-        savetxt(save_file_name+'.csv', array(plot_data), delimiter=',')
-
-    if show:
-        plt.show()
+    plt.show()
 
     print("SAVED to "+save_file_name)
