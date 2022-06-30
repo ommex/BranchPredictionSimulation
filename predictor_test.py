@@ -52,7 +52,7 @@ def test_gshare_predictor(folder_name, checkpoint, pht_size, history_len):
 
         print("file: "+str(fname))
 
-        global_predictor = predictors.n_bit_global_two_level_predictor(history_len, pht_size)
+        global_predictor = predictors.n_bit_gshare(history_len, pht_len=pht_size)
         simulation_results = global_predictor.check_traces(file)
         output.append(simulation_results)
         print(simulation_results)

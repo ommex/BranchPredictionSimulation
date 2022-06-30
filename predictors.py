@@ -584,7 +584,7 @@ class n_bit_gshare:
         wrong_percentage = round((self.wrong_count / self.whole_len) * 100, 3)
         right_percentage = round((self.right_cont / self.whole_len) * 100, 3)
 
-        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len, "unique": self.new,
+        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len,
                 "wrong_percentage": wrong_percentage, "right_percentage": right_percentage,
                 "sample_adress": branch_addr, "pht_size": self.pht_len, "history_len":self.history_len}
 

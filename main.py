@@ -5,7 +5,6 @@ import predictor_test
 from os import path
 
 
-
 def plotter_runner(folder):
 
     print("Geben sie einen reinen Dateinamen (ohne Dateiendung!) an wie die Tabelle heißen soll")
@@ -92,17 +91,17 @@ def plotter_runner(folder):
             print("Geben Sie die maximale Globale Historylänge ein")
             global_history_end_size = int(input())
 
-            print("Geben sie die Länge in Bit der Lokalen Historie ein.\nFür 2 ENTER")
+            print("Geben sie die Länge in Bit der Lokalen Historie ein.\nFür 4 ENTER")
             local_history_len = input()
             if local_history_len == "":
-                local_history_len = 2
+                local_history_len = 4
             else:
                 local_history_len = int(local_history_len)
 
-            print("Geben sie die Größe der PHT Register in Bit an:\nfür 2 ENTER")
+            print("Geben sie die Größe der PHT Register in Bit an:\nfür 4 ENTER")
             pht_size = input()
             if pht_size == "":
-                pht_size = 2
+                pht_size = 4
             else:
                 pht_size = int(pht_size)
 
@@ -121,13 +120,13 @@ def plotter_runner(folder):
             hybrid_iterators.tournament_global_history_iterator(global_history_end_size, local_history_len, pht_size, bit_crop, folder, save_file_name, checkpoint="checkpoint.json")
 
         elif tournament_mode == 2:
-            print("Geben sie die maximale Länge in Bit der Lokalen Historie ein.\nFür 2 ENTER")
+            print("Geben sie die maximale Länge in Bit der Lokalen Historie ein.")
             local_history_end_size = int(input())
 
-            print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 2 ENTER")
+            print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 4 ENTER")
             global_history_len = input()
             if global_history_len == "":
-                global_history_len = 2
+                global_history_len = 4
             else:
                 global_history_len = int(global_history_len)
 
@@ -155,17 +154,17 @@ def plotter_runner(folder):
 
 
         elif tournament_mode == 3:
-            print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 2 ENTER")
+            print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 4 ENTER")
             global_history_len = input()
             if global_history_len == "":
-                global_history_len = 2
+                global_history_len = 4
             else:
                 global_history_len = int(global_history_len)
 
-            print("Geben sie die Länge in Bit der Lokalen Historie ein.\nFür 2 ENTER")
+            print("Geben sie die Länge in Bit der Lokalen Historie ein.\nFür 4 ENTER")
             local_history_len = input()
             if local_history_len == "":
-                local_history_len = 2
+                local_history_len = 4
             else:
                 local_history_len = int(local_history_len)
 
@@ -176,12 +175,8 @@ def plotter_runner(folder):
             else:
                 pht_size = int(pht_size)
 
-            print("Geben sie ein wie viele Bits von links einer Adresse maximal entfernt werden sollen. Für 10 Bit die übrig bleiben wäre es z.B. 32-10=22 \nfür 0 ENTER")
-            bit_crop = input()
-            if bit_crop == "":
-                bit_crop = 0
-            else:
-                bit_crop = int(bit_crop)
+            print("Geben sie ein wie viele Bits von links einer Adresse maximal entfernt werden sollen. Für 10 Bit die übrig bleiben wäre es z.B. 32-10=22")
+            bit_crop = int(input())
 
             if bit_crop < 0 or bit_crop >= 32:
                 print("Die Eingabe kann nur zwischen 0 und 32 liegen!")
@@ -221,17 +216,17 @@ def single_value_runner(folder):
             print("Running local_predictor for PHT-size: "+str(pht_size)+" BitCrop: "+str(bit_crop))
             predictor_test.test_local_predictor(folder, "checkpoint.json", pht_size, bit_crop)
         else:
-            print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 2 ENTER")
+            print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 4 ENTER")
             global_history_len = input()
             if global_history_len == "":
-                global_history_len = 2
+                global_history_len = 4
             else:
                 global_history_len = int(global_history_len)
 
-            print("Geben sie die Länge in Bit der Lokalen Historie ein.\nFür 2 ENTER")
+            print("Geben sie die Länge in Bit der Lokalen Historie ein.\nFür 4 ENTER")
             local_history_len = input()
             if local_history_len == "":
-                local_history_len = 2
+                local_history_len = 4
             else:
                 local_history_len = int(local_history_len)
 
@@ -242,10 +237,10 @@ def single_value_runner(folder):
 
     else:
 
-        print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 2 ENTER")
+        print("Geben sie die Länge in Bit der Globalen Historie ein.\nFür 4 ENTER")
         global_history_len = input()
         if global_history_len == "":
-            global_history_len = 2
+            global_history_len = 4
         else:
             global_history_len = int(global_history_len)
 
