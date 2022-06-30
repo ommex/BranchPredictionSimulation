@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import trace_reader
 import predictors
 
+
 def pht_size_iterator(pht_size, folder_name, save_file_name, checkpoint="", bit_crop=0):
     fig = plt.figure()
     ax = fig.add_subplot()
@@ -10,10 +11,10 @@ def pht_size_iterator(pht_size, folder_name, save_file_name, checkpoint="", bit_
     sizes = {}
 
     for file in reader.traces.keys():
-        print("looking at "+file)
-        plot_data = [[],[]]
+        print("looking at " + file)
+        plot_data = [[], []]
 
-        for i in range(1, pht_size+1):
+        for i in range(1, pht_size + 1):
             plot_data[0].append(i)
             traces = reader.traces[file]
             n_bit_iterator = predictors.n_bit_local_predictor(i, bit_crop=bit_crop)
@@ -40,13 +41,16 @@ def pht_size_iterator(pht_size, folder_name, save_file_name, checkpoint="", bit_
     ax.text(2, 26, size_str)
 
     plt.legend()
-    plt.savefig(save_file_name+".png")
+    plt.savefig(save_file_name + ".png")
 
     plt.show()
 
-    print("SAVED to "+save_file_name)
+    print("SAVED to " + save_file_name)
 
-def bit_crop_size_iterator(end_bit_crop, folder_name, save_file_name,checkpoint="", pht_size=20):
+
+def bit_crop_size_iterator(
+    end_bit_crop, folder_name, save_file_name, checkpoint="", pht_size=20
+):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -54,10 +58,10 @@ def bit_crop_size_iterator(end_bit_crop, folder_name, save_file_name,checkpoint=
     sizes = {}
 
     for file in reader.traces.keys():
-        print("looking at "+file)
-        plot_data = [[],[]]
+        print("looking at " + file)
+        plot_data = [[], []]
 
-        for i in range(0, end_bit_crop+1):
+        for i in range(0, end_bit_crop + 1):
             plot_data[0].append(i)
             traces = reader.traces[file]
             n_bit_iterator = predictors.n_bit_local_predictor(pht_size, bit_crop=i)
@@ -84,8 +88,8 @@ def bit_crop_size_iterator(end_bit_crop, folder_name, save_file_name,checkpoint=
     ax.text(5, 26, size_str)
 
     plt.legend()
-    plt.savefig(save_file_name+".png")
+    plt.savefig(save_file_name + ".png")
 
     plt.show()
 
-    print("SAVED to "+save_file_name)
+    print("SAVED to " + save_file_name)

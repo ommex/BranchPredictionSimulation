@@ -1,5 +1,6 @@
 import collections
 
+
 class n_bit_local_predictor:
     def __init__(self, pht_len, bit_crop=0, architecture=32):
         self.prediction_data = {}
@@ -8,19 +9,19 @@ class n_bit_local_predictor:
         self.whole_len = 0
         self.new = 0
 
-        self.int_len = 2 ** pht_len - 1
+        self.int_len = 2**pht_len - 1
 
         self.bit_crop = bit_crop
         self.architecture = architecture
 
     def increment(self, integer):
-        if (integer < self.int_len):
+        if integer < self.int_len:
             return integer + 1
         else:
             return integer
 
     def decrement(self, integer):
-        if (integer > 0):
+        if integer > 0:
             return integer - 1
         else:
             return integer
@@ -119,9 +120,18 @@ class n_bit_local_predictor:
         wrong_percentage = round((self.wrong_count / self.whole_len) * 100, 3)
         right_percentage = round((self.right_cont / self.whole_len) * 100, 3)
 
-        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len, "unique": self.new,
-                "wrong_percentage": wrong_percentage, "right_percentage": right_percentage, "bit_crop": self.bit_crop,
-                "sample_adress": branch_addr, "pht_size": self.int_len}
+        return {
+            "right": self.right_cont,
+            "wrong": self.wrong_count,
+            "whole": self.whole_len,
+            "unique": self.new,
+            "wrong_percentage": wrong_percentage,
+            "right_percentage": right_percentage,
+            "bit_crop": self.bit_crop,
+            "sample_adress": branch_addr,
+            "pht_size": self.int_len,
+        }
+
 
 class n_bit_global_two_level_predictor:
     def __init__(self, history_len, pht_len=2):
@@ -137,14 +147,13 @@ class n_bit_global_two_level_predictor:
         self.history = []
         self.pht_register = {}
 
-        self.get_binary = lambda x, n: format(x, 'b').zfill(n)
+        self.get_binary = lambda x, n: format(x, "b").zfill(n)
 
         self.init_pht_register()
         self.init_history()
 
-
     def init_pht_register(self):
-        for i in range(2 ** self.history_len):
+        for i in range(2**self.history_len):
             self.pht_register[self.get_binary(i, self.history_len)] = 0
 
     def init_history(self):
@@ -152,20 +161,19 @@ class n_bit_global_two_level_predictor:
             self.history.append(0)
 
     def increment(self, integer):
-        if (integer < 2):
+        if integer < 2:
             return integer + 1
         else:
             return integer
 
     def decrement(self, integer):
-        if (integer > 0):
+        if integer > 0:
             return integer - 1
         else:
             return integer
 
-
     def predict(self):
-        history_string = ''.join(str(e) for e in self.history)
+        history_string = "".join(str(e) for e in self.history)
         pht_value = self.pht_register[history_string]
 
         if pht_value > int(self.pht_len / 2):
@@ -182,25 +190,21 @@ class n_bit_global_two_level_predictor:
         self.history = list(tmp_list)
         self.history[0] = value
 
-
     def save(self, branch):
 
         if branch:
-            history_string = ''.join(str(e) for e in self.history)
+            history_string = "".join(str(e) for e in self.history)
             pht_value = self.pht_register[history_string]
             new_pht_value = self.increment(pht_value)
             self.pht_register[history_string] = new_pht_value
 
-
         else:
-            history_string = ''.join(str(e) for e in self.history)
+            history_string = "".join(str(e) for e in self.history)
             pht_value = self.pht_register[history_string]
             new_pht_value = self.decrement(pht_value)
             self.pht_register[history_string] = new_pht_value
 
         self.append_history(branch)
-
-
 
     def check(self, branch, prediction):
         if branch == prediction:
@@ -222,12 +226,28 @@ class n_bit_global_two_level_predictor:
         wrong_percentage = round((self.wrong_count / self.whole_len) * 100, 3)
         right_percentage = round((self.right_cont / self.whole_len) * 100, 3)
 
-        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len, "unique": self.new,
-                "wrong_percentage": wrong_percentage, "right_percentage": right_percentage,
-                "sample_adress": branch_addr, "pht_size": self.pht_len, "history_len":self.history_len}
+        return {
+            "right": self.right_cont,
+            "wrong": self.wrong_count,
+            "whole": self.whole_len,
+            "unique": self.new,
+            "wrong_percentage": wrong_percentage,
+            "right_percentage": right_percentage,
+            "sample_adress": branch_addr,
+            "pht_size": self.pht_len,
+            "history_len": self.history_len,
+        }
+
 
 class n_bit_tournament:
-    def __init__(self, local_history_len, global_history_len, pht_len=2, bit_crop=0, architecture=32):
+    def __init__(
+        self,
+        local_history_len,
+        global_history_len,
+        pht_len=2,
+        bit_crop=0,
+        architecture=32,
+    ):
         self.decision_dict = {}
 
         self.local_history = {}
@@ -240,23 +260,23 @@ class n_bit_tournament:
         self.whole_len = 0
         self.new = 0
 
-        self.pht_len = 2 ** pht_len - 1
+        self.pht_len = 2**pht_len - 1
         self.local_history_len = local_history_len
         self.global_history_len = global_history_len
 
         self.bit_crop = bit_crop
         self.architecture = architecture
 
-        self.get_binary = lambda x, n: format(x, 'b').zfill(n)
+        self.get_binary = lambda x, n: format(x, "b").zfill(n)
 
         self.init_pht_register()
         self.init_global_history()
 
     def init_pht_register(self):
-        for i in range(2 ** self.global_history_len):
+        for i in range(2**self.global_history_len):
             self.global_pht_register[self.get_binary(i, self.global_history_len)] = 0
 
-        for i in range(2 ** self.local_history_len):
+        for i in range(2**self.local_history_len):
             self.local_pht_register[self.get_binary(i, self.local_history_len)] = 0
 
     def init_global_history(self):
@@ -264,13 +284,13 @@ class n_bit_tournament:
             self.global_history.append(0)
 
     def increment(self, integer):
-        if (integer < self.pht_len):
+        if integer < self.pht_len:
             return integer + 1
         else:
             return integer
 
     def decrement(self, integer):
-        if (integer > 0):
+        if integer > 0:
             return integer - 1
         else:
             return integer
@@ -305,7 +325,7 @@ class n_bit_tournament:
 
         if address in self.local_history.keys():
             local_history = self.local_history[address]
-            pht_address = ''.join(str(x) for x in local_history)
+            pht_address = "".join(str(x) for x in local_history)
             pht_value = self.local_pht_register[pht_address]
 
             if pht_value > int(self.pht_len / 2):
@@ -317,10 +337,9 @@ class n_bit_tournament:
         else:
             return False
 
-
     def predict_global(self):
 
-        history_string = ''.join(str(e) for e in self.global_history)
+        history_string = "".join(str(e) for e in self.global_history)
         pht_value = self.global_pht_register[history_string]
 
         if pht_value > int(self.pht_len / 2):
@@ -365,7 +384,7 @@ class n_bit_tournament:
         appended_history = self.append_history(start_history, branch)
         self.local_history[address] = appended_history
 
-        pht_address = ''.join(str(x) for x in start_history)
+        pht_address = "".join(str(x) for x in start_history)
 
         if branch:
 
@@ -379,18 +398,16 @@ class n_bit_tournament:
             index = self.decrement(index)
             self.local_pht_register[pht_address] = index
 
-
     def save_global(self, branch):
 
         if branch:
-            history_string = ''.join(str(e) for e in self.global_history)
+            history_string = "".join(str(e) for e in self.global_history)
             pht_value = self.global_pht_register[history_string]
             new_pht_value = self.increment(pht_value)
             self.global_pht_register[history_string] = new_pht_value
 
-
         else:
-            history_string = ''.join(str(e) for e in self.global_history)
+            history_string = "".join(str(e) for e in self.global_history)
             pht_value = self.global_pht_register[history_string]
             new_pht_value = self.decrement(pht_value)
             self.global_pht_register[history_string] = new_pht_value
@@ -420,7 +437,6 @@ class n_bit_tournament:
             predictor_type = self.decider(raw_branch_addr)
             cropped_branch_addr = self.crop_hex(raw_branch_addr, self.bit_crop)
 
-
             if predictor_type:
                 prediction = self.predict_local(cropped_branch_addr)
 
@@ -433,15 +449,20 @@ class n_bit_tournament:
 
             self.save_decider(raw_branch_addr, decision)
 
-
-
         wrong_percentage = round((self.wrong_count / self.whole_len) * 100, 3)
         right_percentage = round((self.right_cont / self.whole_len) * 100, 3)
 
-        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len, "unique": self.new,
-                "wrong_percentage": wrong_percentage, "right_percentage": right_percentage, "bit_crop": self.bit_crop,
-                "sample_address": branch, "pht_size": self.pht_len}
-
+        return {
+            "right": self.right_cont,
+            "wrong": self.wrong_count,
+            "whole": self.whole_len,
+            "unique": self.new,
+            "wrong_percentage": wrong_percentage,
+            "right_percentage": right_percentage,
+            "bit_crop": self.bit_crop,
+            "sample_address": branch,
+            "pht_size": self.pht_len,
+        }
 
 
 class n_bit_gshare:
@@ -459,14 +480,13 @@ class n_bit_gshare:
         self.history = []
         self.pht_register = {}
 
-        self.get_binary = lambda x, n: format(x, 'b').zfill(n)
+        self.get_binary = lambda x, n: format(x, "b").zfill(n)
 
         self.init_pht_register()
         self.init_history()
 
-
     def init_pht_register(self):
-        for i in range(2 ** self.history_len):
+        for i in range(2**self.history_len):
             self.pht_register[self.get_binary(i, self.history_len)] = 0
 
     def init_history(self):
@@ -474,13 +494,13 @@ class n_bit_gshare:
             self.history.append(0)
 
     def increment(self, integer):
-        if (integer < 2):
+        if integer < 2:
             return integer + 1
         else:
             return integer
 
     def decrement(self, integer):
-        if (integer > 0):
+        if integer > 0:
             return integer - 1
         else:
             return integer
@@ -493,7 +513,7 @@ class n_bit_gshare:
         for i in range(n):
 
             # If the Character matches
-            if (a[i] == b[i]):
+            if a[i] == b[i]:
                 ans += "0"
             else:
                 ans += "1"
@@ -516,12 +536,12 @@ class n_bit_gshare:
             if len == 0:
                 break
 
-        bin_output = ''.join(str(e) for e in bin_array[::-1])
+        bin_output = "".join(str(e) for e in bin_array[::-1])
 
         return bin_output
 
     def predict(self, address):
-        history_string = ''.join(str(e) for e in self.history)
+        history_string = "".join(str(e) for e in self.history)
         address_last_bits = self.get_back_bits(address, self.history_len)
 
         hybrid_bits = self.xor(history_string, address_last_bits, self.history_len)
@@ -542,10 +562,9 @@ class n_bit_gshare:
         self.history = list(tmp_list)
         self.history[0] = value
 
-
     def save(self, branch, address):
         address_last_bits = self.get_back_bits(address, self.history_len)
-        history_string = ''.join(str(e) for e in self.history)
+        history_string = "".join(str(e) for e in self.history)
 
         hybrid_bits = self.xor(history_string, address_last_bits, self.history_len)
 
@@ -554,15 +573,12 @@ class n_bit_gshare:
             new_pht_value = self.increment(pht_value)
             self.pht_register[hybrid_bits] = new_pht_value
 
-
         else:
             pht_value = self.pht_register[hybrid_bits]
             new_pht_value = self.decrement(pht_value)
             self.pht_register[hybrid_bits] = new_pht_value
 
         self.append_history(branch)
-
-
 
     def check(self, branch, prediction):
         if branch == prediction:
@@ -584,8 +600,13 @@ class n_bit_gshare:
         wrong_percentage = round((self.wrong_count / self.whole_len) * 100, 3)
         right_percentage = round((self.right_cont / self.whole_len) * 100, 3)
 
-        return {"right": self.right_cont, "wrong": self.wrong_count, "whole": self.whole_len,
-                "wrong_percentage": wrong_percentage, "right_percentage": right_percentage,
-                "sample_adress": branch_addr, "pht_size": self.pht_len, "history_len":self.history_len}
-
-
+        return {
+            "right": self.right_cont,
+            "wrong": self.wrong_count,
+            "whole": self.whole_len,
+            "wrong_percentage": wrong_percentage,
+            "right_percentage": right_percentage,
+            "sample_adress": branch_addr,
+            "pht_size": self.pht_len,
+            "history_len": self.history_len,
+        }

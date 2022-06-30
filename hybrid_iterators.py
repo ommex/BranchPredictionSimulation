@@ -4,7 +4,10 @@ from numpy import array
 import trace_reader
 import predictors
 
-def gshare_size_iterator(history_end_size, folder_name, save_file_name, pht_size=2, checkpoint=""):
+
+def gshare_size_iterator(
+    history_end_size, folder_name, save_file_name, pht_size=2, checkpoint=""
+):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -12,10 +15,10 @@ def gshare_size_iterator(history_end_size, folder_name, save_file_name, pht_size
     sizes = {}
 
     for file in reader.traces.keys():
-        print("looking at "+file)
-        plot_data = [[],[]]
+        print("looking at " + file)
+        plot_data = [[], []]
 
-        for i in range(1, history_end_size+1):
+        for i in range(1, history_end_size + 1):
             plot_data[0].append(i)
             traces = reader.traces[file]
             n_bit_iterator = predictors.n_bit_gshare(i, pht_len=pht_size)
@@ -31,15 +34,23 @@ def gshare_size_iterator(history_end_size, folder_name, save_file_name, pht_size
     ax.set_ylabel("wrong_percentage")
     ax.set_xlabel("history_size")
 
-
     plt.legend()
-    plt.savefig(save_file_name+".png")
+    plt.savefig(save_file_name + ".png")
 
     plt.show()
 
-    print("SAVED to "+save_file_name)
+    print("SAVED to " + save_file_name)
 
-def tournament_local_history_iterator(local_history_end_size, global_history_len, pht_len, bit_crop, folder_name, save_file_name, checkpoint=""):
+
+def tournament_local_history_iterator(
+    local_history_end_size,
+    global_history_len,
+    pht_len,
+    bit_crop,
+    folder_name,
+    save_file_name,
+    checkpoint="",
+):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -53,7 +64,9 @@ def tournament_local_history_iterator(local_history_end_size, global_history_len
         for i in range(1, local_history_end_size + 1):
             plot_data[0].append(i)
             traces = reader.traces[file]
-            n_bit_iterator = predictors.n_bit_tournament(i, global_history_len, pht_len = pht_len, bit_crop = bit_crop)
+            n_bit_iterator = predictors.n_bit_tournament(
+                i, global_history_len, pht_len=pht_len, bit_crop=bit_crop
+            )
 
             simulation_results = n_bit_iterator.check_traces(traces)
             plot_data[1].append(simulation_results["wrong_percentage"])
@@ -74,7 +87,15 @@ def tournament_local_history_iterator(local_history_end_size, global_history_len
     print("SAVED to " + save_file_name)
 
 
-def tournament_global_history_iterator(global_history_end_size, local_history_len, pht_len, bit_crop, folder_name, save_file_name, checkpoint=""):
+def tournament_global_history_iterator(
+    global_history_end_size,
+    local_history_len,
+    pht_len,
+    bit_crop,
+    folder_name,
+    save_file_name,
+    checkpoint="",
+):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -88,7 +109,9 @@ def tournament_global_history_iterator(global_history_end_size, local_history_le
         for i in range(1, global_history_end_size + 1):
             plot_data[0].append(i)
             traces = reader.traces[file]
-            n_bit_iterator = predictors.n_bit_tournament(i, local_history_len, pht_len = pht_len, bit_crop = bit_crop)
+            n_bit_iterator = predictors.n_bit_tournament(
+                i, local_history_len, pht_len=pht_len, bit_crop=bit_crop
+            )
 
             simulation_results = n_bit_iterator.check_traces(traces)
             plot_data[1].append(simulation_results["wrong_percentage"])
@@ -109,9 +132,15 @@ def tournament_global_history_iterator(global_history_end_size, local_history_le
     print("SAVED to " + save_file_name)
 
 
-
-
-def tournament_bit_crop_iterator(global_history_len, local_history_len, pht_len, end_bit_crop, folder_name, save_file_name, checkpoint=""):
+def tournament_bit_crop_iterator(
+    global_history_len,
+    local_history_len,
+    pht_len,
+    end_bit_crop,
+    folder_name,
+    save_file_name,
+    checkpoint="",
+):
     fig = plt.figure()
     ax = fig.add_subplot()
 
@@ -122,10 +151,12 @@ def tournament_bit_crop_iterator(global_history_len, local_history_len, pht_len,
         print("looking at " + file)
         plot_data = [[], []]
 
-        for i in range(0, end_bit_crop+1):
+        for i in range(0, end_bit_crop + 1):
             plot_data[0].append(i)
             traces = reader.traces[file]
-            n_bit_iterator = predictors.n_bit_tournament(global_history_len, local_history_len, pht_len = pht_len, bit_crop = i)
+            n_bit_iterator = predictors.n_bit_tournament(
+                global_history_len, local_history_len, pht_len=pht_len, bit_crop=i
+            )
 
             simulation_results = n_bit_iterator.check_traces(traces)
             plot_data[1].append(simulation_results["wrong_percentage"])
@@ -141,7 +172,7 @@ def tournament_bit_crop_iterator(global_history_len, local_history_len, pht_len,
     plt.legend()
     plt.savefig(save_file_name + ".png")
 
-    savetxt(save_file_name + '.csv', array(plot_data), delimiter=',')
+    savetxt(save_file_name + ".csv", array(plot_data), delimiter=",")
 
     plt.show()
 

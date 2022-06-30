@@ -12,7 +12,6 @@ def setup_data(traces):
     data = []
     addresses = []
 
-
     for trace in tqdm(traces):
 
         address = trace["branch_address"]
@@ -33,7 +32,6 @@ def setup_data(traces):
             if address == "b77be7ab":
                 continue
 
-
         else:
             for el in data[::-1]:
                 if el[0] == address:
@@ -42,12 +40,11 @@ def setup_data(traces):
                     stack_pointer = el[3]
                     break
 
-
             history = deepcopy(last_data)
 
             history[stack_pointer] = last_branch
 
-            if stack_pointer < history_len-1:
+            if stack_pointer < history_len - 1:
                 stack_pointer = stack_pointer + 1
 
             tmp = [address, history, branch, stack_pointer]
@@ -57,14 +54,9 @@ def setup_data(traces):
     return data
 
 
-
-
 filename = "checkpoint.json"
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     traces = json.load(f)
 
 data = setup_data(traces["trace"])
-
-
-
